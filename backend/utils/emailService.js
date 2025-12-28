@@ -154,11 +154,11 @@ const sendResetPasswordEmail = async (email, resetToken, username) => {
               
               <p>Nếu bạn gặp khó khăn, vui lòng liên hệ với chúng tôi để được hỗ trợ.</p>
               
-              <p style="margin-top: 30px;">Trân trọng,<br><strong>Két Sắt Số Team</strong></p>
+              <p style="margin-top: 30px;">Trân trọng,<br><strong>KÉT SẮT SỐ Team</strong></p>
             </div>
             
             <div class="email-footer">
-              <p>© ${new Date().getFullYear()} Két Sắt Số. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} KÉT SẮT SỐ. All rights reserved.</p>
               <p>Email này được gửi tự động, vui lòng không trả lời.</p>
             </div>
           </div>
@@ -177,7 +177,7 @@ Mã này có hiệu lực trong 60 phút.
 Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.
 
 Trân trọng,
-Expense Management Team
+KÉT SẮT SỐ Team
       `,
     };
 

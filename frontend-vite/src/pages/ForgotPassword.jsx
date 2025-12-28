@@ -54,7 +54,7 @@ export default function ForgotPassword() {
     >
       <div className={styles["forgot-left"]}>
         <img src={logo} alt="logo" className={styles["forgot-logo"]} />
-        <h1 className={styles["forgot-title"]}>KÉT SỐ SẮT</h1>
+        <h1 className={styles["forgot-title"]}>KÉT SẮT SỐ</h1>
         <p className={styles["forgot-desc"]}>
           Nhập email của bạn để nhận mã xác thực
         </p>

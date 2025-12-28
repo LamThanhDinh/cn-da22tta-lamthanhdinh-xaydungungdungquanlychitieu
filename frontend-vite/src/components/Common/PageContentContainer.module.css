@@ -1,7 +1,7 @@
 /* src/components/Common/PageContentContainer.module.css */
 
 .contentContainer {
-  background: white;
+  background: var(--color-surface-primary);
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   padding: 24px;
@@ -42,7 +42,7 @@
   font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text-primary);
   letter-spacing: -0.025em;
   line-height: 1.25;
   text-rendering: optimizeLegibility;

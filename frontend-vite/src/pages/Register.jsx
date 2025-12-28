@@ -110,9 +110,9 @@ export default function Register() {
     >
       <div className={styles["register-left"]}>
         <img src={logo} alt="logo" className={styles["register-logo"]} />
-        <h1 className={styles["register-title"]}>KÉT SỐ SẮT</h1>
+        <h1 className={styles["register-title"]}>KÉT SẮT SỐ</h1>
         <p className={styles["register-desc"]}>
-          Tạo tài khoản để bắt đầu quản lí thông minh cùng KÉT SỐ SẮT
+          Tạo tài khoản để bắt đầu quản lí thông minh cùng KÉT SẮT SỐ
         </p>
       </div>
 

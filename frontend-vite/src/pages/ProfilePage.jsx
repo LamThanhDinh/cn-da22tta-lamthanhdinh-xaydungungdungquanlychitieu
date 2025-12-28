@@ -138,6 +138,15 @@ const ProfilePage = () => {
         );
       }
     }
+
+    // Chỉ hiển thị thông báo khi BẬT, không hiển thị khi TẮT
+    if (newValue) {
+      setMessage({
+        text: "Đã bật nhắc nhở chi tiêu",
+        type: "success",
+      });
+      setTimeout(() => setMessage({ text: "", type: "" }), 2000);
+    }
   };
 
   // --- DATA FETCHING ---

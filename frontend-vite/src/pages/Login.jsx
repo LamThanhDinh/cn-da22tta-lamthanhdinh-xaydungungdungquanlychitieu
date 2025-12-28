@@ -162,9 +162,9 @@ export default function Login() {
     >
       <div className={styles["login-left"]}>
         <img src={logo} alt="logo" className={styles["login-logo"]} />
-        <h1 className={styles["login-title"]}>KÉT SỐ SẮT</h1>
+        <h1 className={styles["login-title"]}>KÉT SẮT SỐ</h1>
         <p className={styles["login-desc"]}>
-          Đăng nhập để bắt đầu quản lí thông minh cùng KÉT SỐ SẮT
+          Đăng nhập để bắt đầu quản lí thông minh cùng KÉT SẮT SỐ
         </p>
       </div>
 

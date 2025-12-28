@@ -12,7 +12,7 @@ export default function Welcome() {
     <div className={styles["welcome-container"]}>
       <img src={logo} alt="Logo EMG" className={styles["welcome-logo"]} />
 
-      <h1 className={styles["welcome-title"]}>Chào mừng đến với KÉT SỐ SẮT </h1>
+      <h1 className={styles["welcome-title"]}>Chào mừng đến với KÉT SẮT SỐ </h1>
       <p className={styles["welcome-desc"]}>
         Tạm biệt lo âu tiền bạc. Chi tiêu thông minh, cuộc sống nhẹ nhàng hơn bao giờ hết.
       </p>

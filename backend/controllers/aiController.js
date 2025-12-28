@@ -10,7 +10,7 @@ const UtilsHelper = require("./aiHandlers/utilsHelper");
 
 // --- PHẦN NÂNG CẤP: KHỞI TẠO GEMINI ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 // --- KẾT THÚC PHẦN NÂNG CẤP ---
 
 class AIController {
@@ -296,6 +296,15 @@ class AIController {
           timeFilter
         );
 
+      case "COMPARE_MONTHS":
+        console.log("Handling COMPARE_MONTHS intent");
+        const monthCount = entities?.monthCount || 3;
+        return await this.utilsHelper.compareMonths(userId, monthCount);
+
+      case "ANALYZE_FINANCES":
+        console.log("Handling ANALYZE_FINANCES intent");
+        return await this.utilsHelper.analyzeFinancialHealth(userId);
+
       case "VIEW_ACCOUNTS":
         // Xem danh sách tài khoản với filter từ entities
         return await this.accountHandler.getAccountListWithFilter(
@@ -536,7 +545,15 @@ SYSTEM: Bạn là AI assistant chuyên về tài chính cá nhân. Phân tích y
 2. **QUICK_STATS** - Xem thống kê, báo cáo, tổng quan
    - Entities: timeFilter (tháng này, tháng trước, tháng X)
 
-3. **VIEW_ACCOUNTS** - Xem danh sách tài khoản và số dư
+3. **COMPARE_MONTHS** - So sánh chi tiêu giữa các tháng
+   - Entities: monthCount (số tháng cần so sánh, mặc định 3)
+   - Patterns: "so sánh tháng", "tháng nào chi nhiều", "tháng nào tiết kiệm", "xu hướng chi tiêu", "so sánh 3 tháng", "tháng nào sài nhiều", "tháng nào sài ít"
+
+4. **ANALYZE_FINANCES** - Phân tích sức khỏe tài chính và đưa ra insights
+   - Entities: không cần
+   - Patterns: "phân tích tài chính", "đánh giá tài chính", "tình hình tài chính", "sức khỏe tài chính", "insights", "nhận xét", "gợi ý chi tiêu", "thói quen chi tiêu", "cảnh báo tài chính"
+
+5. **VIEW_ACCOUNTS** - Xem danh sách tài khoản và số dư
    - Entities: specificAccount (tên tài khoản cụ thể), bankFilter (ngân hàng cụ thể)
 
 4. **VIEW_TRANSACTIONS** - Xem giao dịch
@@ -589,6 +606,9 @@ ${
     "amountFilter": "trên X|dưới X|từ X đến Y hoặc null",
     "searchTerm": "từ khóa tìm kiếm hoặc null",
     "typeFilter": "CHITIEU|THUNHAP hoặc null",
+    "statusFilter": "active|completed|overdue hoặc null",
+    "monthCount": "số tháng cần so sánh (mặc định 3) hoặc null"
+  },
     "statusFilter": "active|completed|overdue hoặc null"
   },
   "transaction": null hoặc { "name": "...", "amount": số, "type": "CHITIEU/THUNHAP", "accountGuess": "...", "categoryGuess": "..." },

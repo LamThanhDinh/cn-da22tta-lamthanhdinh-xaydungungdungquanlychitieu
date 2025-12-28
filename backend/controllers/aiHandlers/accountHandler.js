@@ -43,6 +43,7 @@ class AccountHandler {
           initialBalance: initialBalance,
         },
       };
+      
     } catch (error) {
       console.error("Error handling add account:", error);
       return {

@@ -481,6 +481,199 @@
   border-color: rgba(251, 191, 36, 0.3);
 }
 
+/* Comparison Chart Styles */
+.comparisonChart {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+}
+
+.monthsComparison {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.monthCard {
+  background: white;
+  border-radius: 10px;
+  padding: 14px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.monthCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.monthCard.highest {
+  border-color: #f87171;
+  background: linear-gradient(135deg, #fff5f5 0%, white 100%);
+}
+
+.monthCard.lowest {
+  border-color: #4ade80;
+  background: linear-gradient(135deg, #f0fdf4 0%, white 100%);
+}
+
+.monthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.monthName {
+  font-weight: 700;
+  font-size: 15px;
+  color: #212529;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.monthStats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.monthStatItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.monthStatLabel {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.monthStatValue {
+  font-weight: 700;
+  color: #212529;
+}
+
+.monthStatValue.income {
+  color: #4ade80;
+}
+
+.monthStatValue.expense {
+  color: #f87171;
+}
+
+.monthStatValue.positive {
+  color: #10b981;
+}
+
+.monthStatValue.negative {
+  color: #ef4444;
+}
+
+/* Financial Insights Styles */
+.financialInsights {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+}
+
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.insightCard {
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  border: 2px solid;
+  transition: all 0.3s ease;
+}
+
+.insightCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.insightCard.warning {
+  border-color: #fbbf24;
+  background: linear-gradient(135deg, #fffbeb 0%, white 100%);
+}
+
+.insightCard.suggestion {
+  border-color: #60a5fa;
+  background: linear-gradient(135deg, #eff6ff 0%, white 100%);
+}
+
+.insightCard.positive {
+  border-color: #4ade80;
+  background: linear-gradient(135deg, #f0fdf4 0%, white 100%);
+}
+
+.insightCard.habit {
+  border-color: #a78bfa;
+  background: linear-gradient(135deg, #f5f3ff 0%, white 100%);
+}
+
+.insightHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.insightIcon {
+  font-size: 18px;
+}
+
+.insightTitle {
+  font-weight: 700;
+  font-size: 14px;
+  color: #212529;
+}
+
+.insightList {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.insightList li {
+  position: relative;
+  font-size: 13px;
+  color: #495057;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.insightList li:last-child {
+  margin-bottom: 0;
+}
+
+.insightList li::before {
+  content: "•";
+  position: absolute;
+  left: -15px;
+  color: inherit;
+  font-weight: bold;
+}
+
 @media (max-width: 768px) {
   .floatingButton {
     bottom: 20px;

@@ -122,18 +122,41 @@ const AIAssistant = () => {
       // Thử gọi API backend trước, nếu fail thì dùng offline processing
       const result = await aiService.processMessage(userMessage);
 
-      setMessages((prev) => [
-        ...prev,
-        { type: "assistant", content: result.response },
-      ]);
+      // Xử lý các action đặc biệt trước
+      if (result.action === "COMPARE_MONTHS" && result.data?.monthsData) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "assistant",
+            content: result.response,
+            showComparisonChart: true,
+            comparisonData: result.data,
+          },
+        ]);
+      } else if (result.action === "FINANCIAL_INSIGHTS" && result.data) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "assistant",
+            content: result.response,
+            showFinancialInsights: true,
+            insightsData: result.data,
+          },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { type: "assistant", content: result.response },
+        ]);
+
+        // Xử lý các action khác
+        if (result.action) {
+          await handleAction(result.action, result.data);
+        }
+      }
 
       // Phát âm thanh thông báo
       playNotificationSound();
-
-      // Xử lý các action
-      if (result.action) {
-        await handleAction(result.action, result.data);
-      }
     } catch (error) {
       console.error("AI Assistant error:", error);
       setMessages((prev) => [
@@ -472,9 +495,9 @@ ${data.formatted.isPositive ? "✅ Tháng này bạn đã tiết kiệm được
 
   const quickActions = [
     { label: "📊 Thống kê", command: "xem thống kê", icon: "📊" },
+    { label: "� So sánh tháng", command: "so sánh 3 tháng gần nhất", icon: "📈" },
+    { label: "🔍 Phân tích", command: "phân tích tài chính của tôi", icon: "🔍" },
     { label: "💸 Chi tiêu", command: "chi 50k ăn sáng", icon: "💸" },
-    { label: "🎯 Mục tiêu", command: "xem mục tiêu", icon: "🎯" },
-    { label: "💰 Số dư", command: "xem số dư", icon: "💰" },
   ];
 
   const handleQuickAction = (command) => {
@@ -483,9 +506,11 @@ ${data.formatted.isPositive ? "✅ Tháng này bạn đã tiết kiệm được
 
   const getSampleCommands = () => [
     "chi 50k ăn sáng",
-    "thu 10 triệu lương",
+    "phân tích tài chính",
+    "đánh giá tình hình tài chính",
+    "so sánh chi tiêu 3 tháng",
+    "tháng nào chi nhiều nhất",
     "xem chi tiêu",
-    "xem số dư",
     "xem mục tiêu",
   ];
 
@@ -696,6 +721,129 @@ ${data.formatted.isPositive ? "✅ Tháng này bạn đã tiết kiệm được
                                 </span>
                               </div>
                             </div>
+                          </div>
+                        </div>
+                      )}
+                      {msg.showComparisonChart && msg.comparisonData && (
+                        <div className={styles.comparisonChart}>
+                          <div className={styles.monthsComparison}>
+                            {msg.comparisonData.monthsData.map((monthData, idx) => {
+                              const isHighest =
+                                monthData.month === msg.comparisonData.highestExpenseMonth.month &&
+                                monthData.year === msg.comparisonData.highestExpenseMonth.year;
+                              const isLowest =
+                                monthData.month === msg.comparisonData.lowestExpenseMonth.month &&
+                                monthData.year === msg.comparisonData.lowestExpenseMonth.year;
+                              
+                              return (
+                                <div
+                                  key={idx}
+                                  className={`${styles.monthCard} ${
+                                    isHighest ? styles.highest : isLowest ? styles.lowest : ""
+                                  }`}
+                                >
+                                  <div className={styles.monthHeader}>
+                                    <span className={styles.monthName}>
+                                      {monthData.monthName}
+                                    </span>
+                                    {isHighest && <span className={styles.badge}>🔴 Cao nhất</span>}
+                                    {isLowest && <span className={styles.badge}>🟢 Thấp nhất</span>}
+                                  </div>
+                                  <div className={styles.monthStats}>
+                                    <div className={styles.monthStatItem}>
+                                      <span className={styles.monthStatLabel}>💰 Thu nhập:</span>
+                                      <span className={styles.monthStatValue}>
+                                        {monthData.totalIncome.toLocaleString()}đ
+                                      </span>
+                                    </div>
+                                    <div className={styles.monthStatItem}>
+                                      <span className={styles.monthStatLabel}>💸 Chi tiêu:</span>
+                                      <span
+                                        className={`${styles.monthStatValue} ${
+                                          isHighest ? styles.expense : isLowest ? styles.income : ""
+                                        }`}
+                                      >
+                                        {monthData.totalExpense.toLocaleString()}đ
+                                      </span>
+                                    </div>
+                                    <div className={styles.monthStatItem}>
+                                      <span className={styles.monthStatLabel}>📈 Số dư:</span>
+                                      <span
+                                        className={`${styles.monthStatValue} ${
+                                          monthData.balance >= 0 ? styles.positive : styles.negative
+                                        }`}
+                                      >
+                                        {monthData.balance.toLocaleString()}đ
+                                      </span>
+                                    </div>
+                                    <div className={styles.monthStatItem}>
+                                      <span className={styles.monthStatLabel}>📋 Giao dịch:</span>
+                                      <span className={styles.monthStatValue}>
+                                        {monthData.transactionCount}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {msg.showFinancialInsights && msg.insightsData && (
+                        <div className={styles.financialInsights}>
+                          <div className={styles.insightsGrid}>
+                            {msg.insightsData.insights?.warnings?.length > 0 && (
+                              <div className={`${styles.insightCard} ${styles.warning}`}>
+                                <div className={styles.insightHeader}>
+                                  <span className={styles.insightIcon}>⚠️</span>
+                                  <span className={styles.insightTitle}>Cảnh báo</span>
+                                </div>
+                                <ul className={styles.insightList}>
+                                  {msg.insightsData.insights.warnings.map((w, idx) => (
+                                    <li key={idx}>{w}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {msg.insightsData.insights?.suggestions?.length > 0 && (
+                              <div className={`${styles.insightCard} ${styles.suggestion}`}>
+                                <div className={styles.insightHeader}>
+                                  <span className={styles.insightIcon}>💡</span>
+                                  <span className={styles.insightTitle}>Gợi ý</span>
+                                </div>
+                                <ul className={styles.insightList}>
+                                  {msg.insightsData.insights.suggestions.map((s, idx) => (
+                                    <li key={idx}>{s}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {msg.insightsData.insights?.positive?.length > 0 && (
+                              <div className={`${styles.insightCard} ${styles.positive}`}>
+                                <div className={styles.insightHeader}>
+                                  <span className={styles.insightIcon}>✅</span>
+                                  <span className={styles.insightTitle}>Điểm tốt</span>
+                                </div>
+                                <ul className={styles.insightList}>
+                                  {msg.insightsData.insights.positive.map((p, idx) => (
+                                    <li key={idx}>{p}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {msg.insightsData.insights?.habits?.length > 0 && (
+                              <div className={`${styles.insightCard} ${styles.habit}`}>
+                                <div className={styles.insightHeader}>
+                                  <span className={styles.insightIcon}>🎯</span>
+                                  <span className={styles.insightTitle}>Thói quen</span>
+                                </div>
+                                <ul className={styles.insightList}>
+                                  {msg.insightsData.insights.habits.map((h, idx) => (
+                                    <li key={idx}>{h}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}

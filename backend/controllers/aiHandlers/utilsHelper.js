@@ -236,6 +236,130 @@ class UtilsHelper {
     return null;
   }
 
+  // So sánh chi tiêu giữa các tháng
+  async compareMonths(userId, months = 3) {
+    try {
+      const userObjectId =
+        typeof userId === "string"
+          ? new mongoose.Types.ObjectId(userId)
+          : userId;
+
+      const now = new Date();
+      const monthsData = [];
+
+      // Lấy thống kê của N tháng gần nhất
+      for (let i = 0; i < months; i++) {
+        const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const month = targetDate.getMonth() + 1;
+        const year = targetDate.getFullYear();
+
+        const startOfMonth = new Date(year, month - 1, 1);
+        const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
+        const transactions = await Transaction.find({
+          userId: userObjectId,
+          date: { $gte: startOfMonth, $lte: endOfMonth },
+        });
+
+        let totalIncome = 0;
+        let totalExpense = 0;
+
+        transactions.forEach((t) => {
+          if (t.type === "THUNHAP") {
+            totalIncome += t.amount || 0;
+          } else if (t.type === "CHITIEU") {
+            totalExpense += t.amount || 0;
+          }
+        });
+
+        monthsData.push({
+          month,
+          year,
+          monthName: targetDate.toLocaleDateString("vi-VN", {
+            month: "long",
+            year: "numeric",
+          }),
+          totalIncome,
+          totalExpense,
+          balance: totalIncome - totalExpense,
+          transactionCount: transactions.length,
+        });
+      }
+
+      // Tìm tháng chi tiêu nhiều nhất và ít nhất
+      const sortedByExpense = [...monthsData].sort(
+        (a, b) => b.totalExpense - a.totalExpense
+      );
+      const highestExpenseMonth = sortedByExpense[0];
+      const lowestExpenseMonth = sortedByExpense[sortedByExpense.length - 1];
+
+      // Tính % thay đổi so với tháng trước
+      const currentMonth = monthsData[0];
+      const lastMonth = monthsData[1];
+      const expenseChange =
+        lastMonth.totalExpense > 0
+          ? ((currentMonth.totalExpense - lastMonth.totalExpense) /
+              lastMonth.totalExpense) *
+            100
+          : 0;
+
+      // Tạo response text
+      let responseText = `📊 <strong>So sánh chi tiêu ${months} tháng gần nhất:</strong>\n\n`;
+
+      monthsData.forEach((data, index) => {
+        const isHighest = data.month === highestExpenseMonth.month && data.year === highestExpenseMonth.year;
+        const isLowest = data.month === lowestExpenseMonth.month && data.year === lowestExpenseMonth.year;
+        const badge = isHighest ? " 🔴" : isLowest ? " 🟢" : "";
+
+        responseText += `${index === 0 ? "📅" : "📆"} <strong>${
+          data.monthName
+        }${badge}:</strong>\n`;
+        responseText += `  💰 Thu nhập: ${data.totalIncome.toLocaleString()}đ\n`;
+        
+        // Chỉ thêm span khi có class, không thêm nếu rỗng
+        if (isHighest) {
+          responseText += `  💸 Chi tiêu: <span class="expense">${data.totalExpense.toLocaleString()}đ</span>\n`;
+        } else if (isLowest) {
+          responseText += `  💸 Chi tiêu: <span class="income">${data.totalExpense.toLocaleString()}đ</span>\n`;
+        } else {
+          responseText += `  💸 Chi tiêu: ${data.totalExpense.toLocaleString()}đ\n`;
+        }
+        
+        responseText += `  📈 Số dư: <span class="balance ${data.balance >= 0 ? "positive" : "negative"}">${data.balance.toLocaleString()}đ</span>\n`;
+        responseText += `  📋 Giao dịch: ${data.transactionCount}\n\n`;
+      });
+
+      responseText += `\n🎯 <strong>Kết luận:</strong>\n`;
+      responseText += `• Chi tiêu <strong>nhiều nhất</strong>: ${highestExpenseMonth.monthName} với <span class="expense">${highestExpenseMonth.totalExpense.toLocaleString()}đ</span>\n`;
+      responseText += `• Chi tiêu <strong>ít nhất</strong>: ${lowestExpenseMonth.monthName} với <span class="income">${lowestExpenseMonth.totalExpense.toLocaleString()}đ</span>\n`;
+
+      if (Math.abs(expenseChange) > 0.01) {
+        const changeText = expenseChange > 0 ? "tăng" : "giảm";
+        const changeClass = expenseChange > 0 ? "expense" : "income";
+        responseText += `• So với tháng trước, chi tiêu <strong>${changeText}</strong> <span class="${changeClass}">${Math.abs(
+          expenseChange
+        ).toFixed(1)}%</span>\n`;
+      }
+
+      return {
+        response: responseText,
+        action: "COMPARE_MONTHS",
+        data: {
+          monthsData,
+          highestExpenseMonth,
+          lowestExpenseMonth,
+          expenseChange,
+        },
+      };
+    } catch (error) {
+      console.error("Error comparing months:", error);
+      return {
+        response: "Có lỗi xảy ra khi so sánh các tháng. Vui lòng thử lại.",
+        action: "CHAT_RESPONSE",
+      };
+    }
+  }
+
   // Lấy thống kê cơ bản
   async getQuickStats(userId, targetMonth = null, targetYear = null) {
     try {
@@ -335,6 +459,247 @@ class UtilsHelper {
         action: "CHAT_RESPONSE",
       };
     }
+  }
+
+  // Phân tích tài chính thông minh và đưa ra insights
+  async analyzeFinancialHealth(userId) {
+    try {
+      const userObjectId =
+        typeof userId === "string"
+          ? new mongoose.Types.ObjectId(userId)
+          : userId;
+
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+
+      // Lấy data 3 tháng gần nhất
+      const monthsData = [];
+      for (let i = 0; i < 3; i++) {
+        const targetDate = new Date(currentYear, currentMonth - 1 - i, 1);
+        const month = targetDate.getMonth() + 1;
+        const year = targetDate.getFullYear();
+
+        const startOfMonth = new Date(year, month - 1, 1);
+        const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
+        const transactions = await Transaction.find({
+          userId: userObjectId,
+          date: { $gte: startOfMonth, $lte: endOfMonth },
+        }).populate("categoryId", "name type");
+
+        let totalIncome = 0;
+        let totalExpense = 0;
+        const categoryBreakdown = {};
+        const expenseByDay = {};
+
+        transactions.forEach((t) => {
+          if (t.type === "THUNHAP") {
+            totalIncome += t.amount || 0;
+          } else if (t.type === "CHITIEU") {
+            totalExpense += t.amount || 0;
+
+            // Category breakdown
+            const catName = t.categoryId?.name || "Khác";
+            if (!categoryBreakdown[catName]) {
+              categoryBreakdown[catName] = 0;
+            }
+            categoryBreakdown[catName] += t.amount || 0;
+
+            // Daily spending
+            const day = t.date.getDate();
+            if (!expenseByDay[day]) {
+              expenseByDay[day] = 0;
+            }
+            expenseByDay[day] += t.amount || 0;
+          }
+        });
+
+        monthsData.push({
+          month,
+          year,
+          monthName: targetDate.toLocaleDateString("vi-VN", {
+            month: "long",
+          }),
+          totalIncome,
+          totalExpense,
+          balance: totalIncome - totalExpense,
+          savingRate:
+            totalIncome > 0
+              ? ((totalIncome - totalExpense) / totalIncome) * 100
+              : 0,
+          transactionCount: transactions.length,
+          categoryBreakdown,
+          expenseByDay,
+        });
+      }
+
+      // Lấy goals
+      const goals = await Goal.find({ userId: userObjectId });
+
+      // Lấy accounts
+      const accounts = await Account.find({ userId: userObjectId });
+      const totalBalance = accounts.reduce(
+        (sum, acc) => sum + (acc.balance || 0),
+        0
+      );
+
+      // Phân tích insights
+      const insights = this.generateFinancialInsights(
+        monthsData,
+        goals,
+        totalBalance
+      );
+
+      return {
+        response: insights.text,
+        action: "FINANCIAL_INSIGHTS",
+        data: {
+          monthsData,
+          insights: insights.data,
+          goals,
+          totalBalance,
+        },
+      };
+    } catch (error) {
+      console.error("Error analyzing financial health:", error);
+      return {
+        response:
+          "Có lỗi xảy ra khi phân tích tài chính. Vui lòng thử lại sau.",
+        action: "CHAT_RESPONSE",
+      };
+    }
+  }
+
+  // Generate insights từ data
+  generateFinancialInsights(monthsData, goals, totalBalance) {
+    const current = monthsData[0];
+    const last = monthsData[1];
+    const twoMonthsAgo = monthsData[2];
+
+    const insights = {
+      warnings: [],
+      suggestions: [],
+      positive: [],
+      habits: [],
+    };
+
+    let responseText = `🔍 <strong>Phân tích tài chính của bạn:</strong>\n\n`;
+
+    // 1. Phân tích xu hướng chi tiêu
+    const expenseTrend =
+      current.totalExpense > last.totalExpense ? "tăng" : "giảm";
+    const expenseChangePercent =
+      last.totalExpense > 0
+        ? Math.abs(
+            ((current.totalExpense - last.totalExpense) / last.totalExpense) *
+              100
+          )
+        : 0;
+
+    responseText += `📊 <strong>Xu hướng chi tiêu:</strong>\n`;
+    if (expenseTrend === "tăng") {
+      responseText += `⚠️ Chi tiêu ${current.monthName} <span class="expense">tăng ${expenseChangePercent.toFixed(1)}%</span> so với tháng trước\n`;
+      if (expenseChangePercent > 20) {
+        insights.warnings.push("Chi tiêu tăng đột biến");
+        responseText += `🚨 <em>Cảnh báo: Chi tiêu tăng quá nhanh!</em>\n`;
+      }
+    } else {
+      responseText += `✅ Chi tiêu ${current.monthName} <span class="income">giảm ${expenseChangePercent.toFixed(1)}%</span> so với tháng trước\n`;
+      insights.positive.push("Chi tiêu được kiểm soát tốt");
+    }
+    responseText += `\n`;
+
+    // 2. Tỷ lệ tiết kiệm
+    responseText += `💰 <strong>Tỷ lệ tiết kiệm:</strong>\n`;
+    if (current.savingRate > 0) {
+      responseText += `✅ Bạn đang tiết kiệm được <span class="income">${current.savingRate.toFixed(1)}%</span> thu nhập\n`;
+      if (current.savingRate >= 20) {
+        insights.positive.push("Tỷ lệ tiết kiệm tốt");
+        responseText += `🎉 <em>Xuất sắc! Tỷ lệ tiết kiệm rất tốt!</em>\n`;
+      } else if (current.savingRate < 10) {
+        insights.suggestions.push("Nên tăng tỷ lệ tiết kiệm");
+        responseText += `💡 <em>Gợi ý: Nên cố gắng tiết kiệm ít nhất 10-20% thu nhập</em>\n`;
+      }
+    } else {
+      responseText += `⚠️ Bạn đang chi tiêu <span class="expense">vượt thu nhập</span> ${Math.abs(current.savingRate).toFixed(1)}%\n`;
+      insights.warnings.push("Chi tiêu vượt thu nhập");
+      responseText += `🚨 <em>Cảnh báo: Cần giảm chi tiêu hoặc tăng thu nhập!</em>\n`;
+    }
+    responseText += `\n`;
+
+    // 3. Phân tích danh mục chi tiêu
+    const topCategories = Object.entries(current.categoryBreakdown)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3);
+
+    if (topCategories.length > 0) {
+      responseText += `📋 <strong>Top 3 hạng mục chi nhiều nhất:</strong>\n`;
+      topCategories.forEach(([cat, amount], index) => {
+        const percent = (amount / current.totalExpense) * 100;
+        
+        // Chỉ thêm span khi percent > 30, không thêm nếu không
+        if (percent > 30) {
+          responseText += `${index + 1}. ${cat}: <span class="expense">${amount.toLocaleString()}đ (${percent.toFixed(1)}%)</span>\n`;
+          insights.warnings.push(`Chi tiêu quá nhiều cho ${cat}`);
+        } else {
+          responseText += `${index + 1}. ${cat}: ${amount.toLocaleString()}đ (${percent.toFixed(1)}%)\n`;
+        }
+      });
+      responseText += `\n`;
+    }
+
+    // 4. Thói quen chi tiêu
+    responseText += `🎯 <strong>Thói quen tài chính:</strong>\n`;
+
+    const avgDailyExpense =
+      current.totalExpense / Object.keys(current.expenseByDay).length;
+    const maxDailyExpense = Math.max(...Object.values(current.expenseByDay));
+
+    if (maxDailyExpense > avgDailyExpense * 3) {
+      insights.habits.push("Có ngày chi tiêu đột biến");
+      responseText += `⚠️ Có những ngày bạn chi tiêu gấp 3 lần mức trung bình\n`;
+      responseText += `💡 <em>Gợi ý: Hãy lập kế hoạch chi tiêu hàng ngày</em>\n`;
+    }
+
+    // Check consistency
+    const isConsistent =
+      Math.abs(current.totalExpense - last.totalExpense) /
+        last.totalExpense <
+      0.15;
+    if (isConsistent) {
+      insights.positive.push("Chi tiêu ổn định");
+      responseText += `✅ Chi tiêu hàng tháng khá ổn định và có thể dự đoán\n`;
+    }
+
+    // 5. Đề xuất hành động
+    responseText += `\n💡 <strong>Đề xuất cải thiện:</strong>\n`;
+
+    if (insights.warnings.length > 0) {
+      insights.warnings.forEach((w) => {
+        if (w === "Chi tiêu vượt thu nhập") {
+          responseText += `• Xem xét cắt giảm chi tiêu không cần thiết\n`;
+          responseText += `• Tìm nguồn thu nhập thêm nếu có thể\n`;
+        } else if (w.includes("Chi tiêu quá nhiều")) {
+          responseText += `• Giảm chi tiêu ở các hạng mục lớn\n`;
+        }
+      });
+    }
+
+    if (current.savingRate > 0 && current.savingRate < 20) {
+      responseText += `• Đặt mục tiêu tiết kiệm ít nhất 20% mỗi tháng\n`;
+    }
+
+    if (goals.length === 0) {
+      responseText += `• Tạo mục tiêu tài chính để có động lực tiết kiệm\n`;
+    }
+
+    responseText += `• Theo dõi chi tiêu hàng ngày để kiểm soát tốt hơn\n`;
+
+    return {
+      text: responseText,
+      data: insights,
+    };
   }
 }
 

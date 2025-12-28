@@ -43,16 +43,13 @@
 
 Đây là đồ án nhóm môn **Công Nghệ Phần Mềm** của **Nhóm 8** - Trường Đại học Trà Vinh. Dự án phát triển hệ thống quản lý chi tiêu cá nhân sử dụng công nghệ web hiện đại với kiến trúc Client-Server, CI/CD pipeline và triển khai cloud native.
 
-### 👥 Thông Tin Nhóm
+### 👥 Thông Tin
 
-- **Nhóm**: Nhóm 8
 - **Trường**: Đại học Trà Vinh
 - **Môn học**: Công Nghệ Phần Mềm
-- **Năm học**: 2024-2025
-- **Thành viên**:
-  - **Nguyễn Thanh Hiếu** - [thhieu2904](https://github.com/thhieu2904) - Team Lead & Full-stack Developer
-  - **Phạm Hoàng Kha** - [Hoangkha1107](https://github.com/Hoangkha1107) - Full-stack Developer
-  - **Nguyễn Trí Cường** - [NguyenTriCuong07](https://github.com/NguyenTriCuong07) - Frontend Developer
+- **Năm học**: 2025-2026
+
+
 
 ### 🎯 Mục Tiêu Đồ Án
 
@@ -536,14 +533,6 @@ docker-compose down
 docker-compose down -v --remove-orphans
 ```
 
-### 📦 Container Images
-
-Dự án sử dụng GitHub Container Registry (GHCR) để lưu trữ Docker images:
-
-- **Backend**: `ghcr.io/thhieu2904/expense-management-backend:latest`
-- **Frontend**: `ghcr.io/thhieu2904/expense-management-frontend:latest`
-
-Images được build tự động qua GitHub Actions khi push code lên main branch.
 
 ---
 
@@ -834,15 +823,6 @@ VITE_API_BASE_URL=https://expense-management-backend-production.onrender.com/api
 - **Performance**: Docker health checks mỗi 30s
 
 ---
-
-## 🤝 Đóng Góp và Phát Triển
-
-### 👥 Thành Viên Nhóm
-
-- **Nguyễn Thanh Hiếu** - [thhieu2904](https://github.com/thhieu2904)
-- **Phạm Hoàng Kha** - [Hoangkha1107](https://github.com/Hoangkha1107)
-- **Nguyễn Trí Cường** - [NguyenTriCuong07](https://github.com/NguyenTriCuong07)
-
 ### 🔄 Quy Trình Phát Triển
 
 1. **Fork repository** về tài khoản cá nhân
@@ -1251,14 +1231,10 @@ git push origin feature/expense-tracking
 
 ### 📞 Thông Tin Liên Hệ
 
-- **Email**: thhieu2904@gmail.com
-- **GitHub**: [thhieu2904](https://github.com/thhieu2904)
-- **LinkedIn**: [Nguyễn Thanh Hiếu](https://linkedin.com/in/thhieu2904)
-- **Production App**: [https://expense-management-frontend-production.onrender.com](https://expense-management-frontend-production.onrender.com)
-
+- **Email**: thanhdinhtv2004@gmail.com
+- **GitHub**: [LamThanhDinh](https://github.com/LamThanhDinh)
 ### 🆘 Báo Lỗi và Đóng Góp
 
-- **Issues**: [GitHub Issues](https://github.com/thhieu2904/ExpenseManagement/issues)
 - **Pull Requests**: Welcome mọi đóng góp cải thiện
 - **Documentation**: Đóng góp cải thiện documentation
 - **Feature Requests**: Đề xuất tính năng mới
@@ -1287,12 +1263,6 @@ Dự án này được phát hành dưới **MIT License** - xem file [LICENSE](
 
 ---
 
-## 🎉 Lời Cảm Ơn
-
-Cảm ơn tất cả thành viên nhóm đã đóng góp vào dự án này. Đây là kết quả của sự nỗ lực, collaboration tuyệt vời và passion về technology!
-
-**Được phát triển với ❤️ bởi Nhóm 8 - Trường Đại học Trà Vinh**
-
 ---
 
 ### 📈 Project Stats
@@ -1306,5 +1276,3 @@ Cảm ơn tất cả thành viên nhóm đã đóng góp vào dự án này. Đ�
 **⭐ Nếu dự án hữu ích, hãy cho chúng mình một star nhé! ⭐**
 
 ---
-
-**🚀 Live Demo**: [https://expense-management-frontend-production.onrender.com](https://expense-management-frontend-production.onrender.com)
