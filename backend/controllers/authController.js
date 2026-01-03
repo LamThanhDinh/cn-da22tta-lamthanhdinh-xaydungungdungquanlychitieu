@@ -122,7 +122,7 @@ const login = async (req, res) => {
     // --- KẾT THÚC LOGIC MỚI ---
 
     const token = jwt.sign(
-      { id: user._id, username: user.username },
+      { id: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "12h" }
     );
@@ -135,6 +135,7 @@ const login = async (req, res) => {
         username: user.username,
         fullname: user.fullname,
         avatar: user.avatar,
+        role: user.role,
       },
     });
   } catch (err) {
@@ -149,7 +150,7 @@ const me = async (req, res) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select(
-      "fullname username avatar"
+      "fullname username avatar role"
     );
 
     if (!user)

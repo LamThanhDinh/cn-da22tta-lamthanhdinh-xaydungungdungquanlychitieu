@@ -57,4 +57,7 @@ app.use("/api/setup", setupRoutes);
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", require("./routes/userRoutes"));
 
+const adminRoutes = require("./routes/admin");
+app.use("/api/admin", adminRoutes);
+
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));

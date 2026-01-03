@@ -12,6 +12,7 @@ import TransactionsPage from "../pages/TransactionsPage";
 import GoalsPage from "../pages/GoalsPage";
 import StatisticsPage from "../pages/StatisticsPage";
 import ProfilePage from "../pages/ProfilePage";
+import AdminDashboard from "../pages/AdminDashboard";
 import AIAssistant from "../components/AIAssistant/AIAssistant";
 
 export default function AppRoutes() {
@@ -36,6 +37,7 @@ export default function AppRoutes() {
         <Route path="/goals" element={<GoalsPage />} />
         <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
 
       {/* AI Assistant - chỉ hiển thị trên các trang đã đăng nhập */}

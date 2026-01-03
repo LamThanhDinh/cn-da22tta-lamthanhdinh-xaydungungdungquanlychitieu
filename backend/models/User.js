@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema(
     fullname: { type: String, required: true },
     password: { type: String, required: true },
     avatar: { type: String, default: "" }, //  thêm dòng này
+    role: { type: String, enum: ['user', 'admin'], default: 'user' }, // Thêm trường role
     email: {
       type: String,
       required: false, //  Không bắt buộc email
