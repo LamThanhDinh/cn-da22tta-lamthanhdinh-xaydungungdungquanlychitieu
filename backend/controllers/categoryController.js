@@ -1,5 +1,5 @@
 const Category = require("../models/Category");
-const mongoose = require("mongoose"); // ✅ Bắt buộc để sử dụng mongoose.Types.ObjectId
+const mongoose = require("mongoose"); //  Bắt buộc để sử dụng mongoose.Types.ObjectId
 
 const Transaction = require("../models/Transaction");
 const getCategories = async (req, res) => {
@@ -9,7 +9,7 @@ const getCategories = async (req, res) => {
 
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    // ✅ SỬA: Lọc bỏ goal categories trừ khi được yêu cầu explicitly
+    //  SỬA: Lọc bỏ goal categories trừ khi được yêu cầu explicitly
     const categoryFilter = { userId };
     if (includeGoalCategories !== "true") {
       categoryFilter.isGoalCategory = { $ne: true };
@@ -19,7 +19,7 @@ const getCategories = async (req, res) => {
       createdAt: -1,
     });
 
-    // ✅ BẮT ĐẦU SỬA: Xây dựng bộ lọc thời gian cho aggregation
+    //  BẮT ĐẦU SỬA: Xây dựng bộ lọc thời gian cho aggregation
     const matchTimeFilter = {};
     let startDate, endDate;
 
@@ -64,7 +64,7 @@ const getCategories = async (req, res) => {
 
     // Tính tổng giao dịch theo danh mục với bộ lọc thời gian
     const totals = await Transaction.aggregate([
-      { $match: { userId: userObjectId, ...matchTimeFilter } }, // <-- Thêm bộ lọc thời gian vào đây
+      { $match: { userId: userObjectId, ...matchTimeFilter } }, //Thêm bộ lọc thời gian vào đây
       {
         $group: {
           _id: "$categoryId",
@@ -73,7 +73,7 @@ const getCategories = async (req, res) => {
         },
       },
     ]);
-    // ✅ KẾT THÚC SỬA
+    //  KẾT THÚC SỬA
 
     // Chuyển totals thành object dễ lookup (không thay đổi)
     const totalMap = {};
@@ -140,7 +140,7 @@ const updateCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "Không tìm thấy danh mục" });
     }
-
+star
     category.name = name || category.name;
     category.type = type || category.type;
     category.icon = icon || category.icon;

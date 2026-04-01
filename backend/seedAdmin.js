@@ -30,7 +30,7 @@ async function createAdminUser() {
       if (existingAdmin.role !== "admin") {
         existingAdmin.role = "admin";
         await existingAdmin.save();
-        console.log("✅ Đã cập nhật role thành admin");
+        console.log(" Đã cập nhật role thành admin");
       }
     } else {
       // Hash password
@@ -46,7 +46,7 @@ async function createAdminUser() {
       });
 
       await adminUser.save();
-      console.log("✅ Tạo tài khoản admin thành công!");
+      console.log(" Tạo tài khoản admin thành công!");
       console.log("Thông tin đăng nhập:");
       console.log("- Username: admin1");
       console.log("- Password: admin123");
