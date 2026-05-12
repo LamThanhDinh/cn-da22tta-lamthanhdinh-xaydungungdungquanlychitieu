@@ -130,7 +130,7 @@ const sendResetPasswordEmail = async (email, resetToken, username) => {
         <body>
           <div class="email-container">
             <div class="email-header">
-              <h1>🔐 Đặt Lại Mật Khẩu</h1>
+              <h1> Đặt Lại Mật Khẩu</h1>
             </div>
             
             <div class="email-body">
@@ -182,10 +182,10 @@ KÉT SẮT SỐ Team
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent successfully:", info.messageId);
+    console.log(" Email sent successfully:", info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.error(" Error sending email:", error);
     throw new Error("Không thể gửi email. Vui lòng thử lại sau.");
   }
 };
